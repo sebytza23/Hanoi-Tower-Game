@@ -148,7 +148,10 @@ void Choice()
 			cout << "Jocul a pornit, va rugam sa introduceti un nume:"; cin >> Nume;
 			break;
 		case 2:
+			system("cls");
 			cout << "Jocul se bazeaza pe o tabla cu 3 bete,unde se pune un anumit numar de discuri pe batul 1.\nDiscurile trebuie sa fie : Primul sa fie cel mai mic, Iar ultimul sa fie cel mai mare.\n";
+			system("pause");
+			goto eroare;
 			break;
 		case 3:
 			cout << "Iesire Joc.\n";
