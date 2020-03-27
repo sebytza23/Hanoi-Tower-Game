@@ -1,0 +1,383 @@
+#include <iostream>
+#include <string>
+#include <iomanip>
+
+using namespace std;
+
+// ------------------------------------------------ Structura joc ---------------------------------------------------
+
+bool jucator = true;
+
+struct nod {
+	string info;
+	char Nume[20];
+	int moves;
+	int tag;
+	bool tagjucator;
+	nod* pred;
+};
+
+struct coada {
+	string mutare;
+	coada* pred;
+};
+
+typedef struct coada Coada;
+
+typedef struct nod Stiva;
+
+nod Jucator1, Jucator2;
+
+// ------------------------------------------------ Structura joc ---------------------------------------------------
+
+
+// -------------------------------------------------- Aditionale ----------------------------------------------------
+
+void PRINT_ERROR(int);
+
+Coada* Init(Coada* cd) {
+	cd->pred = NULL;
+	return cd;
+}
+
+Coada* Top(Coada* cd) {
+	return cd;
+}
+
+Stiva* INIT(Stiva* st) {
+	st->pred = NULL;
+	st->tag = NULL;
+	return st;
+}
+
+Stiva* TOP(Stiva* st) {
+	return st;
+}
+
+// -------------------------------------------------- Aditionale ----------------------------------------------------
+
+
+// ------------------------------------------ Lungime stiva + Suma stiva --------------------------------------------
+
+int SUM(Stiva* st, bool tag) {
+	int suma = 0;
+	while (st->pred) {
+		if (st->tagjucator == tag) {
+			suma += st->tag;
+		}
+		st = st->pred;
+	}
+	return suma;
+}
+
+int Another_SUM(int n) {
+	int suma = n;
+	if (n == 1)
+		return 1;
+	else return suma + Another_SUM(n - 1);
+}
+
+int LENGTH(Stiva* st,bool tag) {
+	int k = 0;
+	while (st->pred) {
+		k++;
+		st = st->pred;
+	}
+	return k;
+}
+
+// ------------------------------------------------ Lungime stiva ---------------------------------------------------
+
+
+// ------------------------------------------------- Golire stiva ---------------------------------------------------
+
+void EMPTY(Stiva*& st) {
+	if (st->pred) {
+		while (st->pred) {
+			Stiva* aux;
+			aux = st;
+			st = st->pred;
+			delete aux;
+		}
+	}
+	else PRINT_ERROR(1);
+}
+
+// ------------------------------------------------- Golire stiva ---------------------------------------------------
+
+
+// ---------------------------------------------- Adaugare in stiva -------------------------------------------------
+
+Stiva* PUSH(Stiva* vf, int inf , bool jucator) {
+	Stiva* aux;
+	aux = new(Stiva);
+	aux = INIT(aux); 
+	string c;
+	for (int i = 1; i <= inf; i++) {
+		c =  c + "*"+" " ;
+	}
+	aux->tagjucator = jucator;
+	aux->info = c;
+	aux->tag = inf;
+	if (vf) {
+		aux->pred = vf;
+		vf = aux;
+	}
+	else vf = aux;
+	return vf;
+}
+
+// ---------------------------------------------- Adaugare in stiva -------------------------------------------------
+
+
+// ---------------------------------------------- Extragere din stiva -----------------------------------------------
+
+Stiva* POP(Stiva* &st1,Stiva* st2) {
+		Stiva* aux;
+		aux = new(Stiva);
+		aux = INIT(aux);
+		aux ->info = st1->info;
+		aux->tag = st1->tag;
+		aux->tagjucator = jucator;
+		if (st2) {
+			aux->pred = st2;
+			st2 = aux;
+		}
+		else st2 = aux;
+		st1 = st1->pred;
+		return st2;
+}
+
+// ---------------------------------------------- Extragere din stiva -----------------------------------------------
+
+
+// ----------------------------------------------------- Afisare ----------------------------------------------------
+
+void PRINT(Stiva* st1,Stiva* st2,Stiva* st3,Stiva* st4,Stiva* st5, int n) {
+		cout << endl;
+		n++;
+		cout << "Mutari actuale: " << Jucator1.moves << endl << endl << endl;
+		while (st1->pred)
+		{
+			cout << st1->info << endl;
+			st1 = st1->pred;
+		}
+		for (int i = 1; i <= n*2; i++) {
+			cout << "=";
+		}
+		cout << endl << setw(n + strlen("Turnul 1") / 2) << "Turnul 1" << endl << endl;
+		while (st2->pred)
+		{
+			cout << st2->info << endl;
+			st2 = st2->pred;
+		}
+		for (int i = 1; i <= n*2; i++) {
+			cout << "=";
+		}
+		cout << endl << setw(n + strlen("Turnul 2") / 2) << "Turnul 2" << endl << endl;
+		while (st3->pred)
+		{
+			cout << st3->info << endl;
+			st3 = st3->pred;
+		}
+		for (int i = 1; i <= n*2; i++) {
+			cout << "=";
+		}
+		cout << endl << setw(n + strlen("Turnul 3") / 2) << "Turnul 3" << endl << endl;
+		while (st4->pred)
+		{
+			cout << st4->info << endl;
+			st4 = st4->pred;
+		}
+		for (int i = 1; i <= n * 2; i++) {
+			cout << "=";
+		}
+		cout << endl << setw(n + strlen("Turnul 4") / 2) << "Turnul 4" << endl << endl;
+		while (st5->pred)
+		{
+			cout << st5->info << endl;
+			st5 = st5->pred;
+		}
+		for (int i = 1; i <= n * 2; i++) {
+			cout << "=";
+		}
+		cout << endl << setw(n + strlen("Turnul 5") / 2) << "Turnul 5" << endl << endl;
+}
+
+
+// ---------------------------------------------- Afisare -----------------------------------------------------------
+
+// ------------------------------------------ Alegeri inceput -------------------------------------------------------
+
+void Choice(Stiva*& st1, Stiva*& st2)
+{
+	int choice;
+		cout << endl;
+	eroare:
+		system("cls");
+		cout << " 1) Porneste jocul.\n";
+		cout << " 2) Cum se joaca?.\n";
+		cout << " 3) Iesire.\n";
+		cout << "\tAlege>: ";
+		cin >> choice;
+		if (cin.fail() || (choice > 3 || choice < 1)) {
+			cin.clear();
+			cin.ignore();	
+			PRINT_ERROR(4);	
+			system("pause");
+			goto eroare;
+		}
+		switch (choice)
+		{
+		case 1:
+			system("cls");
+			cout << "\tJocul a pornit!\n\tAlegeti un nume pentru Jucatorul 1:"; cin >> Jucator1.Nume;
+			cout << "\tAlegeti un nume pentru Jucatorul 2:"; cin >> Jucator2.Nume;
+			Jucator1.tagjucator = true;
+			Jucator2.tagjucator = false;
+			break;
+		case 2:
+			system("cls");
+			cout << "Jocul se bazeaza pe o tabla cu 3 bete,unde se pune un anumit numar de discuri pe batul 1.\nDiscurile trebuie sa fie : Primul sa fie cel mai mic, Iar ultimul sa fie cel mai mare.\n";
+			system("pause");
+			goto eroare;
+			break;
+		case 3:
+			cout << "Iesire Joc.\n";
+			system("pause");
+			exit(0);
+		}
+}
+
+// ------------------------------------------ Alegeri inceput -------------------------------------------------------
+
+
+// --------------------------------------- Alegere numar discuri ----------------------------------------------------
+
+void discuri(int& n)
+{
+eroare:
+	system("cls");
+	cout << "Va rugam introduceti numarul de discuri(minim 3):";
+	cin >> n;
+	if (cin.fail() || (n < 3)) {
+		cin.clear();
+		cin.ignore();
+		PRINT_ERROR(4);
+		system("pause");
+		goto eroare;
+	}
+}
+
+// ------------------------------------------ Alegere numar discuri -------------------------------------------------
+
+
+// -------------------------------------------- Partea principala ---------------------------------------------------
+
+
+int main() {
+	int n;
+	start:
+	int choice;
+	Stiva* st1;
+	Stiva* st2;
+	Stiva* st3;
+	Stiva* st4;
+	Stiva* st5;
+	Coada* mutari;
+	mutari = new(Coada);
+	mutari = Init(mutari);
+	st1 = new(Stiva);
+	st1 = INIT(st1);
+	st2 = new(Stiva);
+	st2 = INIT(st2);
+	st3 = new(Stiva);
+	st3 = INIT(st3);
+	st4 = new(Stiva);
+	st4 = INIT(st4);
+	st5 = new(Stiva);
+	st5 = INIT(st5);
+	Choice(st1,st5);
+	discuri(n);
+	Jucator1.moves = pow(2, n) - 1;
+	for (int i = 1; i <= n; i++)
+		st1 = PUSH(st1, n - i + 1, Jucator1.tagjucator);
+	for (int i = 1; i <= n; i++)
+		st5 = PUSH(st5, n - i + 1, Jucator2.tagjucator);
+	system("cls");
+	cout << "Numarul minim de mutari pentru a rezolva Turnurile lui Hanoi este: " << Jucator1.moves << endl;
+	Jucator1.moves = 0;
+	int suma = Another_SUM(n);
+	system("pause");
+	while ((SUM(st1, false) != suma) && (SUM(st2, false) != suma) && (SUM(st4, true) != suma) && (SUM(st5, true) != suma)) {
+		system("cls");
+		PRINT(st1, st2, st3, st4, st5, n);
+		if (jucator) {
+			if ((TOP(st1)->tag >= TOP(st2)->tag) && (TOP(st1)->tag >= TOP(st3)->tag) && (TOP(st1)->tag >= TOP(st4)->tag) && (TOP(st1)->tag >= TOP(st5)->tag)) {
+				if ((TOP(st2)->tag == NULL) && (TOP(st3)->tag == NULL) && (TOP(st4)->tag == NULL) && (TOP(st5)->tag == TOP(st1)->tag)) {
+					cout << "Jocul a luat singurul disc disponibil pentru Jucatorul " << Jucator1.Nume << " de pe Turnul 1";
+					Jucator1.moves++;
+					cout << "\nValori disponibile de plasat:\n";
+					eroare1:
+						cout << "\t1) Turnul 2\n\t2) Turnul 3\n\t3) Turnul 4\n\t4) Turnul 5\n\tAlegere > "; cin >> choice;
+						if (cin.fail() || (choice > 4 || choice < 1)) {
+							PRINT_ERROR(5);
+							goto eroare1;
+						}
+						switch (choice) {
+							case 1: st2 = POP(st1, st2); break;
+							case 2: st3 = POP(st1, st3); break;
+							case 3: st4 = POP(st1, st4); break;
+							case 4: st5 = POP(st1, st5); break;
+						}
+					jucator = false;
+				}
+				else if ((TOP(st2)->tag == NULL) && (TOP(st3)->tag == NULL) && (TOP(st4)->tag == NULL) && (TOP(st5)->tag == TOP(st1)->tag)) {
+
+				}
+			}
+		}
+		else {
+			if ((TOP(st1)->tag >= TOP(st2)->tag) && (TOP(st1)->tag >= TOP(st3)->tag) && (TOP(st1)->tag >= TOP(st4)->tag) && (TOP(st1)->tag >= TOP(st5)->tag)) {
+				if ((TOP(st2)->tag == NULL) && (TOP(st3)->tag == NULL) && (TOP(st2)->tag == NULL) && (TOP(st5->pred)->tag < TOP(st1)->tag)) {
+					cout << "Jocul a luat singurul disc disponibil pentru Jucatorul " << Jucator2.Nume << " de pe Turnul 1";
+					Jucator2.moves++;
+					cout << "\nValori disponibile de plasat:\n";
+				eroare2:
+					cout << "\t1) Turnul 1\n\t2) Turnul 2\n\t3) Turnul 3\n\t4) Turnul 4\n\tAlegere > "; cin >> choice;
+					if (cin.fail() || (choice > 4 || choice < 1)) {
+						PRINT_ERROR(5);
+						goto eroare2;
+					}
+					switch (choice) {
+						case 1: st1 = POP(st5->pred, st1); break;
+						case 2: st2 = POP(st5->pred, st2); break;
+						case 3: st3 = POP(st5->pred, st3); break;
+						case 4: st4 = POP(st5->pred, st4); break;
+					}
+				}
+				jucator = true;
+			}
+		}
+		
+	}
+	system("pause");
+}
+
+// -------------------------------------------- Partea principala ---------------------------------------------------
+
+
+// ---------------------------------------------- Partea de erori ---------------------------------------------------
+
+void PRINT_ERROR(int err) {
+	switch (err) {
+	case 4:  cout << "Valoarea introdusa nu este valida! Introduceti valoarea din nou!\n"; break;
+	case 5: cin.clear();
+		cin.ignore();
+		PRINT_ERROR(4);
+		system("pause");
+		break;
+	}
+}
+
+// ---------------------------------------------- Partea de erori ---------------------------------------------------
